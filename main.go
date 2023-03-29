@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -13,6 +14,9 @@ import (
 var (
 	Token     string
 	BotPrefix string
+	ChannelID string
+	BotId     string
+	goBot     *discordgo.Session
 
 	config *configStruct
 )
@@ -20,6 +24,7 @@ var (
 type configStruct struct {
 	Token     string `json : "Token"`
 	BotPrefix string `json : "BotPrefix"`
+	ChannelID string `json : "ChannelID"`
 }
 
 type jingleBellsResponse struct {
@@ -48,13 +53,11 @@ func ReadConfig() error {
 
 	Token = os.Getenv("TOKEN")
 	BotPrefix = os.Getenv("BOTPREFIX")
+	ChannelID = os.Getenv("ChannelID")
 
 	return nil
 
 }
-
-var BotId string
-var goBot *discordgo.Session
 
 func Start() {
 	goBot, err := discordgo.New("Bot " + Token)
@@ -74,6 +77,8 @@ func Start() {
 	BotId = u.ID
 
 	goBot.AddHandler(messageHandler)
+	goBot.AddHandler(handleGuildMemberAdd)
+	goBot.AddHandler(handleGuildMemberRemove)
 
 	err = goBot.Open()
 
@@ -215,5 +220,22 @@ func sendAPIRequest(s *discordgo.Session, m *discordgo.MessageCreate, url string
 	case "yomama":
 		data := response.(*yomamaJokeResponse)
 		s.ChannelMessageSend(m.ChannelID, data.Joke)
+	}
+}
+
+func handleGuildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
+	message := fmt.Sprintf("Welcome <@%s> to our server!", m.Member.User.ID)
+	_, err := s.ChannelMessageSend(ChannelID, message)
+	if err != nil {
+		log.Printf("Error sending welcome message: %v\n", err)
+	}
+}
+
+func handleGuildMemberRemove(s *discordgo.Session, m *discordgo.GuildMemberRemove) {
+
+	message := fmt.Sprintf("Goodbye %s", m.Member.User.Username)
+	_, err := s.ChannelMessageSend(ChannelID, message)
+	if err != nil {
+		log.Printf("Error sending goodbye message: %v\n", err)
 	}
 }

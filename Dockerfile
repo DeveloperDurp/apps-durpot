@@ -12,6 +12,7 @@ RUN go build -o bot
 # Set the DISCORD_BOT_TOKEN environment variable
 ENV TOKEN=${DISCORD_TOKEN}
 ENV BOTPREFIX="!"
+ENV ChannelID=${ChannelID}
 
 # Run the bot binary
 CMD ["./bot"]
