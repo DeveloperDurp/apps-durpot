@@ -53,7 +53,7 @@ func ReadConfig() error {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return err
+		//return err
 	}
 
 	Token = os.Getenv("TOKEN")
