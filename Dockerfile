@@ -10,10 +10,10 @@ COPY . .
 RUN go build -o bot
 
 # Set the DISCORD_BOT_TOKEN environment variable
-ENV TOKEN=${token}
-ENV BOTPREFIX=${botprefix}
-ENV ChannelID=${channelid}
-ENV OPENAI_API_KEY=${openai_api_key}
+ENV TOKEN=${TOKEN}
+ENV BOTPREFIX=${BOTPREFIX}
+ENV ChannelID=${ChannelID}
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # Run the bot binary
 CMD ["./bot"]
