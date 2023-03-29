@@ -13,6 +13,7 @@ RUN go build -o bot
 ENV TOKEN=${DISCORD_TOKEN}
 ENV BOTPREFIX="!"
 ENV ChannelID=${ChannelID}
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # Run the bot binary
 CMD ["./bot"]

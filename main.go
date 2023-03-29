@@ -29,6 +29,7 @@ type configStruct struct {
 	Token     string `json : "Token"`
 	BotPrefix string `json : "BotPrefix"`
 	ChannelID string `json : "ChannelID"`
+	apiKey    string `json : "OPEN_API_KEY"`
 }
 
 type jingleBellsResponse struct {
