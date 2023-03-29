@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
+	openai "github.com/sashabaranov/go-openai"
 )
 
 var (
@@ -16,6 +19,7 @@ var (
 	BotPrefix string
 	ChannelID string
 	BotId     string
+	apiKey    string
 	goBot     *discordgo.Session
 
 	config *configStruct
@@ -54,6 +58,7 @@ func ReadConfig() error {
 	Token = os.Getenv("TOKEN")
 	BotPrefix = os.Getenv("BOTPREFIX")
 	ChannelID = os.Getenv("ChannelID")
+	apiKey = os.Getenv("OPENAI_API_KEY")
 
 	return nil
 
@@ -79,6 +84,7 @@ func Start() {
 	goBot.AddHandler(messageHandler)
 	goBot.AddHandler(handleGuildMemberAdd)
 	goBot.AddHandler(handleGuildMemberRemove)
+	goBot.AddHandler(handleTag)
 
 	err = goBot.Open()
 
@@ -237,5 +243,50 @@ func handleGuildMemberRemove(s *discordgo.Session, m *discordgo.GuildMemberRemov
 	_, err := s.ChannelMessageSend(ChannelID, message)
 	if err != nil {
 		log.Printf("Error sending goodbye message: %v\n", err)
+	}
+}
+
+func handleTag(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// Ignore messages sent by the bot itself
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
+
+	client := openai.NewClient(apiKey)
+
+	// Check if bot is mentioned in message
+	for _, mention := range m.Mentions {
+		if mention.ID == s.State.User.ID {
+			// Remove mention from message content
+			content := strings.Replace(m.ContentWithMentionsReplaced(), "<@"+s.State.User.ID+">", "", -1)
+			content = strings.Replace(content, "<@!"+s.State.User.ID+">", "", -1)
+			content = strings.TrimSpace(content)
+
+			resp, err := client.CreateChatCompletion(
+				context.Background(),
+				openai.ChatCompletionRequest{
+					Model: openai.GPT3Dot5Turbo,
+					Messages: []openai.ChatCompletionMessage{
+						{
+							Role:    openai.ChatMessageRoleUser,
+							Content: content,
+						},
+					},
+				},
+			)
+
+			if err != nil {
+				fmt.Printf("ChatCompletion error: %v\n", err)
+				return
+			}
+
+			fmt.Println(resp.Choices[0].Message.Content)
+
+			// Send generated response back to Discord
+			_, err = s.ChannelMessageSend(m.ChannelID, resp.Choices[0].Message.Content)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 	}
 }
