@@ -1,83 +1,30 @@
-# Project Name
-> Outline a brief description of your project.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
-https://hub.docker.com/r/developerdurp/durpot
+This is a simple Go program that uses the DiscordGo library and some APIs to handle some commands from users in a Discord server. It responds to certain messages prefixed by the BotPrefix variable, which can be customized in the .env file. It uses the godotenv library to read these values from the environment.
 
-## Table of Contents
-* [General Info](#general-information)
-* [Technologies Used](#technologies-used)
-* [Features](#features)
-* [Screenshots](#screenshots)
-* [Setup](#setup)
-* [Usage](#usage)
-* [Project Status](#project-status)
-* [Room for Improvement](#room-for-improvement)
-* [Acknowledgements](#acknowledgements)
-* [Contact](#contact)
-<!-- * [License](#license) -->
+The main file (main.go) sets up a Discord bot using a token and listens to incoming messages. It then checks for certain messages and sends a response depending on the command.
 
+The program uses the following APIs:
 
-## General Information
-- Provide general information about your project here.
-- What problem does it (intend to) solve?
-- What is the purpose of your project?
-- Why did you undertake it?
-<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
+    Yo Mama API
+    Dad Joke API
+    Jingle Bells API
+    Ron Swanson Quotes API
 
+Dependencies
 
-## Technologies Used
-- Tech 1 - version 1.0
-- Tech 2 - version 2.0
-- Tech 3 - version 3.0
+This program has several dependencies, which are managed using Go modules. The dependencies are:
 
+    github.com/bwmarrin/discordgo: a Discord API library for Go
+    github.com/joho/godotenv: a library for loading environment variables from a file
+    github.com/sashabaranov/go-openai: a library for accessing the OpenAI GPT-3 API
 
-## Features
-List the ready features here:
-- Awesome feature 1
-- Awesome feature 2
-- Awesome feature 3
+These dependencies are automatically fetched and installed when the program is built or run.
+How to run
 
+To run the program, you need to have a valid Discord bot token. You can obtain this by creating a new bot application in the Discord Developer Portal. Once you have a token, you need to create a .env file in the same directory as the program, with the following variables:
 
-## Screenshots
-![Example screenshot](./img/screenshot.png)
-<!-- If you have screenshots you'd like to share, include them here. -->
+    TOKEN: the Discord bot token
+    BOTPREFIX: the prefix for bot commands (e.g. "!")
+    ChannelID: the ID of the channel where you want the bot to listen
+    OPENAI_API_KEY: an API key for the OpenAI GPT-3 API (optional)
 
-
-## Setup
-What are the project requirements/dependencies? Where are they listed? A requirements.txt or a Pipfile.lock file perhaps? Where is it located?
-
-Proceed to describe how to install / setup one's local environment / get started with the project.
-
-
-## Usage
-How does one go about using it?
-Provide various use cases and code examples here.
-
-`write-your-code-here`
-
-
-## Project Status
-Project is: _in progress_ / _complete_ / _no longer being worked on_. If you are no longer working on it, provide reasons why.
-
-
-## Room for Improvement
-Include areas you believe need improvement / could be improved. Also add TODOs for future development.
-
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
-
-To do:
-- Feature to be added 1
-- Feature to be added 2
-
-
-## Acknowledgements
-Give credit here.
-- This project was inspired by...
-- This project was based on [this tutorial](https://www.example.com).
-- Many thanks to...
-
-
-## Contact
-Created by [@klukritz] - feel free to contact me!
+Once you have set up the .env file, you can run the program by executing go run main.go in the terminal.
