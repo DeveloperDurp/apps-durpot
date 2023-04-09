@@ -2,3 +2,6 @@ include:
   - project: 'developerdurp/yml'
     ref: main
     file: 'pipelines/build-container.yml'
+
+variables:
+  GITVERSION: 1.0.0
