@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: durpot
+  name: durpot
+  labels:
+    app: durpot
+spec:
+  selector:
+    matchLabels:
+      app: durpot
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: durpot
+    spec:
+      containers:
+      - name: durpot
+        image: registry.gitlab.com/developerdurp/durpot
+        imagePullPolicy: Always       
+        envFrom:
+        - secretRef:
+            name: durpot-secret
