@@ -1,19 +1,20 @@
-FROM golang:latest
+FROM registry.durp.info/golang:1.20-alpine
 
-# Set the working directory
+RUN chmod -R o=,g=rwX /go
+RUN mkdir /app
+
+RUN adduser \
+--disabled-password \
+--gecos "" \
+--home "/nonexistent" \
+--shell "/sbin/nologin" \
+--no-create-home \
+--uid "10001" \
+"durp"
+
 WORKDIR /app
+COPY ./output/* .
+RUN chown -R durp /app
 
-# Copy the source code into the container
-COPY . .
-
-# Build the Go binary
-RUN go build -o bot
-
-# Set the DISCORD_BOT_TOKEN environment variable
-ENV TOKEN=${TOKEN}
-ENV BOTPREFIX=${BOTPREFIX}
-ENV ChannelID=${ChannelID}
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-
-# Run the bot binary
-CMD ["./bot"]
+USER durp
+CMD ["./main"]
