@@ -1,4 +1,4 @@
-module golang-discord-bot
+module "gitlab.com/DeveloperDurp/durpot"
 
 go 1.19
 

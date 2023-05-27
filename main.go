@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 	openai "github.com/sashabaranov/go-openai"
+	"gitlab.com/DeveloperDurp/durpot/model"
 )
 
 var (
@@ -22,30 +21,8 @@ var (
 	apiKey    string
 	goBot     *discordgo.Session
 
-	config *configStruct
+	config *model.ConfigStruct
 )
-
-type configStruct struct {
-	Token     string `json : "Token"`
-	BotPrefix string `json : "BotPrefix"`
-	ChannelID string `json : "ChannelID"`
-	apiKey    string `json : "OPEN_API_KEY"`
-}
-
-type jingleBellsResponse struct {
-	Message  string `json:"message"`
-	Subtitle string `json:"subtitle"`
-}
-
-type dadJokeResponse struct {
-	ID     string `json:"id"`
-	Joke   string `json:"joke"`
-	Status int    `json:"status"`
-}
-
-type yomamaJokeResponse struct {
-	Joke string `json:"joke"`
-}
 
 func ReadConfig() error {
 
@@ -101,30 +78,33 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	baseurl := "https://kong.durp.info/"
+	//baseurl := "https://kong.durp.info/"
 	switch m.Content {
 	case BotPrefix + "ping":
-		s.ChannelMessageSend(m.ChannelID, "pong")
-	//case BotPrefix + "meme":
-	//	response = getJson(baseurl+"random-meme", "url")
-	//	s.ChannelMessageSend(m.ChannelID, response)
-	//case BotPrefix + "catfact":
-	//	response = getJson(baseurl+"cat-facts/fact", "fact")
-	//	s.ChannelMessageSend(m.ChannelID, response)
-	//case BotPrefix + "cat":
-	//	response = getJson(baseurl+"random-cats", "file")
-	//	s.ChannelMessageSend(m.ChannelID, response)
-	case BotPrefix + "yomama":
-		sendAPIRequest(s, m, baseurl, "yomama")
-	case BotPrefix + "dadjoke":
-		sendAPIRequest(s, m, baseurl, "dadjoke")
-	//case BotPrefix + "dog":
-	//	response = getJson(baseurl+"random-dogs", "message")
-	//	s.ChannelMessageSend(m.ChannelID, response)
-	case BotPrefix + "jinglebells":
-		sendAPIRequest(s, m, baseurl, "jinglebells")
-	case BotPrefix + "swanson":
-		sendAPIRequest(s, m, baseurl, "swanson")
+		_, err := s.ChannelMessageSend(m.ChannelID, "pong")
+		if err != nil {
+			fmt.Println("Failed to send Message")
+		}
+		//case BotPrefix + "meme":
+		//	response = getJson(baseurl+"random-meme", "url")
+		//	s.ChannelMessageSend(m.ChannelID, response)
+		//case BotPrefix + "catfact":
+		//	response = getJson(baseurl+"cat-facts/fact", "fact")
+		//	s.ChannelMessageSend(m.ChannelID, response)
+		//case BotPrefix + "cat":
+		//	response = getJson(baseurl+"random-cats", "file")
+		//	s.ChannelMessageSend(m.ChannelID, response)
+		//case BotPrefix + "yomama":
+		//	sendAPIRequest(s, m, baseurl, "yomama")
+		//case BotPrefix + "dadjoke":
+		//	sendAPIRequest(s, m, baseurl, "dadjoke")
+		//case BotPrefix + "dog":
+		//	response = getJson(baseurl+"random-dogs", "message")
+		//	s.ChannelMessageSend(m.ChannelID, response)
+		//case BotPrefix + "jinglebells":
+		//	sendAPIRequest(s, m, baseurl, "jinglebells")
+		//case BotPrefix + "swanson":
+		//	sendAPIRequest(s, m, baseurl, "swanson")
 
 	}
 
@@ -144,91 +124,91 @@ func main() {
 	return
 }
 
-func getSwansonQuote(s *discordgo.Session, m *discordgo.MessageCreate, url string) {
-	resp, err := http.Get(url + "/ronswanson")
-	if err != nil {
-		errStr := err.Error()
-		s.ChannelMessageSend(m.ChannelID, errStr)
-		return
-	}
-	defer resp.Body.Close()
+//func getSwansonQuote(s *discordgo.Session, m *discordgo.MessageCreate, url string) {
+//	resp, err := http.Get(url + "/ronswanson")
+//	if err != nil {
+//		errStr := err.Error()
+//		s.ChannelMessageSend(m.ChannelID, errStr)
+//		return
+//	}
+//	defer resp.Body.Close()
+//
+//	var data []string
+//	err = json.NewDecoder(resp.Body).Decode(&data)
+//	if err != nil {
+//		errStr := err.Error()
+//		s.ChannelMessageSend(m.ChannelID, errStr)
+//		return
+//	}
+//
+//	if len(data) == 0 {
+//		errStr := "No quotes found."
+//		s.ChannelMessageSend(m.ChannelID, errStr)
+//		return
+//	}
+//
+//	s.ChannelMessageSend(m.ChannelID, data[0])
+//}
 
-	var data []string
-	err = json.NewDecoder(resp.Body).Decode(&data)
-	if err != nil {
-		errStr := err.Error()
-		s.ChannelMessageSend(m.ChannelID, errStr)
-		return
-	}
-
-	if len(data) == 0 {
-		errStr := "No quotes found."
-		s.ChannelMessageSend(m.ChannelID, errStr)
-		return
-	}
-
-	s.ChannelMessageSend(m.ChannelID, data[0])
-}
-
-func sendAPIRequest(s *discordgo.Session, m *discordgo.MessageCreate, url string, endpoint string) {
-	var response interface{}
-	switch endpoint {
-	case "dadjoke":
-		url = url + "/dadjoke"
-		var data dadJokeResponse
-		response = &data
-	case "jinglebells":
-		url = url + "/foaas/jinglebells/durp"
-		var data jingleBellsResponse
-		response = &data
-	case "yomama":
-		url = url + "/yomama"
-		var data yomamaJokeResponse
-		response = &data
-	case "swanson":
-		getSwansonQuote(s, m, url)
-		return
-	default:
-		s.ChannelMessageSend(m.ChannelID, "Invalid endpoint.")
-		return
-	}
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		errStr := err.Error()
-		s.ChannelMessageSend(m.ChannelID, errStr)
-		return
-	}
-	req.Header.Set("Accept", "application/json")
-
-	client := http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		errStr := err.Error()
-		s.ChannelMessageSend(m.ChannelID, errStr)
-		return
-	}
-	defer resp.Body.Close()
-
-	err = json.NewDecoder(resp.Body).Decode(response)
-	if err != nil {
-		errStr := err.Error()
-		s.ChannelMessageSend(m.ChannelID, errStr)
-		return
-	}
-
-	switch endpoint {
-	case "dadjoke":
-		data := response.(*dadJokeResponse)
-		s.ChannelMessageSend(m.ChannelID, data.Joke)
-	case "jinglebells":
-		data := response.(*jingleBellsResponse)
-		s.ChannelMessageSend(m.ChannelID, data.Message)
-	case "yomama":
-		data := response.(*yomamaJokeResponse)
-		s.ChannelMessageSend(m.ChannelID, data.Joke)
-	}
-}
+//func sendAPIRequest(s *discordgo.Session, m *discordgo.MessageCreate, url string, endpoint string) {
+//	var response interface{}
+//	switch endpoint {
+//	case "dadjoke":
+//		url = url + "/dadjoke"
+//		var data model.DadJokeResponse
+//		response = &data
+//	case "jinglebells":
+//		url = url + "/foaas/jinglebells/durp"
+//		var data model.JingleBellsResponse
+//		response = &data
+//	case "yomama":
+//		url = url + "/yomama"
+//		var data model.YomamaJokeResponse
+//		response = &data
+//	case "swanson":
+//		getSwansonQuote(s, m, url)
+//		return
+//	default:
+//		s.ChannelMessageSend(m.ChannelID, "Invalid endpoint.")
+//		return
+//	}
+//
+//	req, err := http.NewRequest("GET", url, nil)
+//	if err != nil {
+//		errStr := err.Error()
+//		s.ChannelMessageSend(m.ChannelID, errStr)
+//		return
+//	}
+//	req.Header.Set("Accept", "application/json")
+//
+//	client := http.Client{}
+//	resp, err := client.Do(req)
+//	if err != nil {
+//		errStr := err.Error()
+//		s.ChannelMessageSend(m.ChannelID, errStr)
+//		return
+//	}
+//	defer resp.Body.Close()
+//
+//	err = json.NewDecoder(resp.Body).Decode(response)
+//	if err != nil {
+//		errStr := err.Error()
+//		s.ChannelMessageSend(m.ChannelID, errStr)
+//		return
+//	}
+//
+//	switch endpoint {
+//	case "dadjoke":
+//		data := response.(*model.DadJokeResponse)
+//		s.ChannelMessageSend(m.ChannelID, data.Joke)
+//	case "jinglebells":
+//		data := response.(*model.JingleBellsResponse)
+//		s.ChannelMessageSend(m.ChannelID, data.Message)
+//	case "yomama":
+//		data := response.(*model.YomamaJokeResponse)
+//		s.ChannelMessageSend(m.ChannelID, data.Joke)
+//	}
+//}
 
 func handleGuildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	message := fmt.Sprintf("Welcome <@%s> to our server!", m.Member.User.ID)
