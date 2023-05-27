@@ -33,7 +33,10 @@ func GetUnraidUsage(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	jsonData, _ := json.MarshalIndent(response, "", "  ")
 	jsonStr := string(jsonData)
-	s.ChannelMessageSend(m.ChannelID, "Power Usage Response:\n```json\n"+jsonStr+"\n```")
+	_, err = s.ChannelMessageSend(m.ChannelID, "Power Usage Response:\n```json\n"+jsonStr+"\n```")
+	if err != nil {
+		fmt.Println("Failed to send message")
+	}
 
 }
 
