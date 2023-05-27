@@ -1,4 +1,4 @@
 include:
   - project: 'developerdurp/yml'
     ref: main
-    file: 'pipelines/build-container.yml'
+    file: 'pipelines/golang.yml'
