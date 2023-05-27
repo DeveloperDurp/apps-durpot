@@ -16,6 +16,9 @@ spec:
         app: durpot
     spec:
       containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.deployment.image }}:{{ default .Chart.Version .Values.deployment.tag }}"
+        imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}         
       - name: durpot
         image: registry.gitlab.com/developerdurp/durpot
         imagePullPolicy: Always       

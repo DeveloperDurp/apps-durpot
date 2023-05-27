@@ -1,0 +1,4 @@
+deployment: 
+  image: registry.gitlab.com/developerdurp/durpot
+  tag: ""
+  imagePullPolicy: Always
