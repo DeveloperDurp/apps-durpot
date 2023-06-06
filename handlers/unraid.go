@@ -11,22 +11,20 @@ import (
 var (
 	ClientID = model.ClientID
 	TokenURL = model.TokenURL
-	Username = model.Username
-	Password = model.Password
+	username = model.Username
+	password = model.Password
 )
 
 func GetUnraidUsage(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	token := GenerateToken(ClientID, "client_credentials", TokenURL, Username, Password)
-
 	url := "https://durpapi.durp.info/api/v1/unraid/powerusage"
-	accessToken := token.AccessToken
 
-	body := CallDurpAPI(url, accessToken)
+	body := CallDurpAPI(url, username, password)
 
 	var response model.PowerUsageResponse
 	err := json.Unmarshal(body, &response)
 	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Failed to get Power Usage")
 		fmt.Println("Error parsing response:", err)
 		return
 	}
