@@ -24,7 +24,10 @@ func GetUnraidUsage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var response model.PowerUsageResponse
 	err := json.Unmarshal(body, &response)
 	if err != nil {
-		s.ChannelMessageSend(m.ChannelID, "Failed to get Power Usage")
+		_, err = s.ChannelMessageSend(m.ChannelID, "Failed to get Power Usage")
+		if err != nil {
+			fmt.Println("Failed to send message")
+		}
 		fmt.Println("Error parsing response:", err)
 		return
 	}
