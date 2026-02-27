@@ -1,4 +1,4 @@
 include:
   - project: 'durfy/ci-includes/yml'
     ref: main
-    file: 'pipelines/golang.yml'
+    file: 'pipelines/go-build.yml'
