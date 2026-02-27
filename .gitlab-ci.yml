@@ -1,4 +1,4 @@
 include:
-  - project: 'developerdurp/yml'
+  - project: 'durfy/ci-includes/yml'
     ref: main
     file: 'pipelines/golang.yml'
