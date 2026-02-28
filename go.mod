@@ -3,7 +3,7 @@ module gitlab.com/DeveloperDurp/durpot
 go 1.19
 
 require (
-	github.com/bwmarrin/discordgo v0.26.1
+	github.com/bwmarrin/discordgo v0.29.0
 	github.com/sashabaranov/go-openai v1.5.7
 )
 
